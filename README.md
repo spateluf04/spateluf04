@@ -10,14 +10,14 @@
   <img src="./hd-whoami.svg" width="860" alt="whoami">
 </picture>
 
-> Everything on this page is drawn by this repository. No third-party widgets,<br>
-> no image host that can rate-limit or go dark, nothing here that stops working<br>
-> because somebody else's free tier ran out.
+> Junior CS at the University of Florida. Most of what I build starts at the<br>
+> hardware or the raw sensor data and ends at something a person can use.
 
-Junior Computer Science student at the University of Florida. I like building<br>
-things end to end, from wiring up hardware and offline data pipelines through<br>
-to shipping interfaces people can actually use. Currently poking at energy<br>
-systems, mobile apps, and open source.
+Lately that has meant pulling fingertip trajectories out of smart-glasses<br>
+recordings, building a rules engine that decides whether a prescription is safe<br>
+before any model is allowed an opinion, and a C++ co-purchase graph that turned<br>
+out to be the most interesting part of a data structures course. Currently<br>
+poking at energy systems, mobile apps, and open source.
 
 <samp>python · typescript · c++ · react · react native · firebase · fastapi</samp>
 
@@ -69,16 +69,6 @@ tokenised, non-PHI data crosses into the AI layer.
 </picture>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./streak-dark.svg">
-  <img src="./streak.svg" width="860" alt="Current streak, longest streak, and active days">
-</picture>
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./year-dark.svg">
-  <img src="./year.svg" width="860" alt="The last 365 days, one character per day">
-</picture>
-
-<picture>
   <source media="(prefers-color-scheme: dark)" srcset="./hd-stack-dark.svg">
   <img src="./hd-stack.svg" width="860" alt="stack">
 </picture>
@@ -109,6 +99,10 @@ coursework &nbsp;data structures &amp; algorithms · operating systems · softwa
   <summary><samp>how this page works</samp></summary>
 
 <br>
+
+Every image here is drawn by this repository. No third-party widgets, no image
+host that can rate-limit or go dark, nothing that stops working because
+somebody else's free tier ran out.
 
 The portrait is one SVG. Each row of characters sits in a `clipPath` whose
 rectangle animates from zero width to full, with a small block riding the wipe

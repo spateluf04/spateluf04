@@ -40,7 +40,8 @@ jobs:
 
       - name: commit only if something actually changed
         run: |
-          FILES="stats.svg stats-dark.svg streak.svg streak-dark.svg langs.svg langs-dark.svg year.svg year-dark.svg"
+          # Keep this in step with ENABLED in scripts/generate_stats.py.
+          FILES="stats.svg stats-dark.svg langs.svg langs-dark.svg"
           if [ -z "$(git status --porcelain -- $FILES)" ]; then
             echo "no change"
             exit 0

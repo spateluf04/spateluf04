@@ -417,6 +417,22 @@ def draw_year(data, theme):
 
 # --------------------------------------------------------------------------
 
+ALL_GRAPHICS = {
+    "stats": draw_stats,
+    "streak": draw_streak,
+    "langs": draw_langs,
+    "year": draw_year,
+}
+
+# A stats section is a bet that the numbers flatter you, and it is worth
+# checking whether they do. "streak" and "year" are drawn by the code above but
+# deliberately not emitted: a one-day current streak is a worse-than-neutral
+# signal, and a 365-day grid that is 97% full stops reads as absence rather than
+# as restraint. Both go straight back in by adding their names here, once the
+# numbers earn the space.
+ENABLED = ("stats", "langs")
+
+
 def main():
     login = os.environ.get("GH_LOGIN")
     token = os.environ.get("GITHUB_TOKEN")
@@ -441,12 +457,7 @@ def main():
         "stars": sum(repo["stargazerCount"] for repo in repos),
     }
 
-    graphics = {
-        "stats": draw_stats,
-        "streak": draw_streak,
-        "langs": draw_langs,
-        "year": draw_year,
-    }
+    graphics = {name: ALL_GRAPHICS[name] for name in ENABLED}
 
     for name, draw in graphics.items():
         for theme in ("light", "dark"):
