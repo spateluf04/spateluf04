@@ -98,6 +98,20 @@ def check_svgs():
                      "back when it finishes." % name)
                 break
 
+        # The one that actually bit. GitHub renders these SVGs with SMIL
+        # halted, so whatever the base attribute says is what the world sees.
+        # If an element animates its width from 0 and its base width is also 0,
+        # it is invisible everywhere that matters.
+        for base, target in re.findall(
+                r'<rect[^>]*\bwidth="([\d.]+)"[^>]*>\s*<animate[^>]*'
+                r'attributeName="width"[^>]*\bto="([\d.]+)"', raw):
+            if float(base) != float(target):
+                fail("%s: a rect animates width to %s but its base width is %s. "
+                     "Where SMIL does not run, the base value is the only value. "
+                     "Set them equal and let the animation be an enhancement."
+                     % (name, target, base))
+                break
+
     return total
 
 

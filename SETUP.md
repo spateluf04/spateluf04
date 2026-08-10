@@ -153,9 +153,22 @@ Three consequences:
 1. **You cannot change the font of README text.** Not with CSS, not with a
    `font` tag, not with inline SVG. Your only choice is GitHub's sans or its
    monospace. Anything in your own typeface has to be an image.
-2. **Motion must live inside the SVG.** Scripts are stripped, so animation has
-   to be SMIL, `animate` and `set` elements, inside the file. GitHub does run
-   those.
+2. **Motion must live inside the SVG, and must never be load-bearing.** Scripts
+   are stripped, so animation has to be SMIL, `animate` and `set` elements,
+   inside the file. But GitHub renders these SVGs with SMIL halted, at least in
+   the blob preview and in a fresh README render, so whatever the base attribute
+   says is what the world sees.
+
+   This was established with a probe committed to the repo: a static `clipPath`
+   next to an animated one, otherwise identical. The static row drew, the
+   animated row did not. `clipPath` survives sanitisation, `<style>` survives,
+   the inlined `@font-face` survives; only the animation fails to advance.
+
+   So every animated attribute here has its **finished** value as its base
+   value, and the animation only replays it. Open `portrait.svg` directly in a
+   browser and it types itself out; put it in a README and it is simply there.
+   Anything that animates from zero and has a base of zero is invisible on the
+   one page where a blank image is most expensive. `verify.py` now fails on it.
 3. **An external font URL cannot work.** These SVGs load through an `img` tag,
    and browsers refuse subresource fetches for image documents. A `@font-face`
    with a base64 data URI does work, which is why every SVG carries its own

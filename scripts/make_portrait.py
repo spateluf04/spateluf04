@@ -114,11 +114,24 @@ def render(lines, cols, theme):
         # fill="freeze" everywhere, so the portrait prints once and stops.
         # No looping: a face that retypes itself forever is a novelty, not a
         # design.
+        #
+        # Note the base width is the FULL span, not zero. This matters more
+        # than it looks. GitHub renders README and blob-preview SVGs with SMIL
+        # halted, so an animation that starts from width="0" never advances and
+        # the portrait is clipped away to nothing. Verified by rendering a probe
+        # with a static clipPath next to an animated one: the static row draws,
+        # the animated row does not.
+        #
+        # So the finished state is the default, and the animation is an
+        # enhancement layered on top. Open the file directly in a browser and it
+        # types itself; drop it in a README and it is simply there. It fails
+        # open either way, which is the only acceptable behaviour for the one
+        # page where a blank image is most expensive.
         clips.append(
-            '<clipPath id="r%d"><rect x="%s" y="%s" width="0" height="%s">'
+            '<clipPath id="r%d"><rect x="%s" y="%s" width="%s" height="%s">'
             '<animate attributeName="width" from="0" to="%s" dur="%ss" '
             'begin="%ss" fill="freeze"/></rect></clipPath>'
-            % (i, K.n(PAD), K.n(y), K.n(LINE_H), K.n(span), SWEEP, K.n(start))
+            % (i, K.n(PAD), K.n(y), K.n(span), K.n(LINE_H), K.n(span), SWEEP, K.n(start))
         )
 
         texts.append(
