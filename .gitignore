@@ -1,0 +1,14 @@
+# Full font files. Only the subsets are committed; they are what the SVGs
+# actually carry, and they are three orders of magnitude smaller.
+assets/fonts/*.ttf
+assets/fonts/*.otf
+
+# Your source photo. The ASCII output is public; the original does not have to be.
+photo/
+
+# Local render checks.
+.preview/
+
+__pycache__/
+*.pyc
+.DS_Store

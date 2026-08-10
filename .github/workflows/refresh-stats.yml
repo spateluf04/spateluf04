@@ -1,0 +1,43 @@
+name: refresh stats
+
+on:
+  schedule:
+    - cron: "17 5 * * *"     # an odd minute, because :00 is the busiest slot on
+                             # the shared scheduler and gets delayed
+  workflow_dispatch:
+  # Deliberately no `push` trigger. This job commits, and a push trigger would
+  # re-run it on its own commit.
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-stats
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: draw the graphics
+        env:
+          # The built-in token returns the same numbers as a personal access
+          # token for public data. No PAT to create, rotate, or leak.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_LOGIN: ${{ github.repository_owner }}
+        run: python3 scripts/generate_stats.py
+
+      - name: commit only if something actually changed
+        run: |
+          FILES="stats.svg stats-dark.svg streak.svg streak-dark.svg langs.svg langs-dark.svg year.svg year-dark.svg"
+          if [ -z "$(git status --porcelain -- $FILES)" ]; then
+            echo "no change"
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- $FILES
+          git commit -m "stats: refresh"
+          git push
