@@ -46,37 +46,104 @@ STAGGER = 0.09                  # seconds between row starts
 SWEEP = 0.55                    # seconds for one row to type
 
 
-def cutout(img):
-    """Force everything outside the subject to white, which maps to the blank
-    end of the ramp. Skip this and the background fills with '@' and drowns
-    the portrait."""
-    try:
-        from rembg import remove
-    except ImportError:
-        print("  rembg not installed, skipping cut-out (background will be noisy)")
-        return img.convert("RGB")
-
+def cutout_rembg(img):
+    from rembg import remove
     cut = remove(img)                                  # RGBA, subject only
     white = Image.new("RGBA", cut.size, (255, 255, 255, 255))
     return Image.alpha_composite(white, cut.convert("RGBA")).convert("RGB")
 
 
-def prepare(img, gamma):
+def cutout_grabcut(img, margin=0.06, sky=28):
+    """Background removal with nothing but OpenCV.
+
+    rembg is a 176 MB model download and a hard dependency on a network that
+    may not be there. GrabCut needs neither, and for the only case that matters
+    here (one head, roughly centred, against a background that is not the same
+    colour as the face) it is enough.
+
+    Two priors do the work. The border of a tight head crop is background, and
+    the subject is somewhere in the middle. Sky and most indoor walls are more
+    blue than skin is, so pixels well into the blue are marked as definite
+    background before GrabCut starts, which stops it eating into the hairline.
+    """
     import cv2
 
-    gray = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2GRAY)
+    rgb = np.array(img.convert("RGB"))
+    h, w = rgb.shape[:2]
+
+    mask = np.full((h, w), cv2.GC_PR_FGD, np.uint8)
+    mx, my = int(w * margin), int(h * margin)
+    mask[:my, :] = mask[-my:, :] = cv2.GC_BGD
+    mask[:, :mx] = mask[:, -mx:] = cv2.GC_BGD
+
+    blueness = rgb[:, :, 2].astype(int) - rgb[:, :, 0].astype(int)
+    mask[blueness > sky] = cv2.GC_BGD
+
+    cv2.grabCut(rgb, mask, None,
+                np.zeros((1, 65), np.float64), np.zeros((1, 65), np.float64),
+                5, cv2.GC_INIT_WITH_MASK)
+
+    keep = np.isin(mask, (cv2.GC_FGD, cv2.GC_PR_FGD)).astype(np.uint8)
+
+    # Keep only the largest blob, then close pinholes and feather the edge so
+    # the ramp does not draw a hard staircase around the head.
+    count, labels, stats, _ = cv2.connectedComponentsWithStats(keep, 8)
+    if count > 1:
+        biggest = 1 + int(np.argmax(stats[1:, cv2.CC_STAT_AREA]))
+        keep = (labels == biggest).astype(np.uint8)
+    keep = cv2.morphologyEx(keep, cv2.MORPH_CLOSE, np.ones((9, 9), np.uint8))
+    alpha = cv2.GaussianBlur(keep.astype(np.float32), (0, 0), 2.0)[..., None]
+
+    out = rgb * alpha + 255.0 * (1 - alpha)
+    return Image.fromarray(out.astype(np.uint8))
+
+
+def cutout(img, method):
+    """Force everything outside the subject to white, which maps to the blank
+    end of the ramp. Skip this and the background fills with '@' and drowns
+    the portrait."""
+    if method == "none":
+        return img.convert("RGB")
+    if method == "rembg":
+        try:
+            return cutout_rembg(img)
+        except Exception as exc:
+            print("  rembg unavailable (%s), falling back to grabcut"
+                  % type(exc).__name__)
+    return cutout_grabcut(img)
+
+
+def prepare(img, gamma, sharpen=0.0, clip=3.0):
+    import cv2
+
+    rgb = np.array(img.convert("RGB"))
+    gray = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
+    subject = gray < 246
 
     # Smooth skin without losing edges.
     gray = cv2.bilateralFilter(gray, 9, 75, 75)
 
+    # Unsharp mask, before the downscale. Averaging 90 columns out of a
+    # thousand-pixel-wide face destroys thin features first, and glasses frames
+    # are the thinnest thing on most faces. Pre-emphasising the edges is what
+    # keeps them alive through the resize.
+    if sharpen:
+        blur = cv2.GaussianBlur(gray, (0, 0), 4.0)
+        gray = cv2.addWeighted(gray, 1 + sharpen, blur, -sharpen, 0)
+
     # Local contrast per tile. Global autocontrast leaves a flatly-lit face as
     # a single tone.
-    gray = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8)).apply(gray)
+    gray = cv2.createCLAHE(clipLimit=clip, tileGridSize=(8, 8)).apply(gray)
 
     # The fix. Without this curve the face comes out washed out and
     # featureless; this is what makes glasses, brows and lips survive.
-    gray = (np.power(gray / 255.0, gamma) * 255.0).astype(np.uint8)
-    return gray
+    gray = (np.power(gray / 255.0, gamma) * 255.0)
+
+    # Whatever the cut-out removed stays removed. CLAHE and the curve both
+    # nudge near-white pixels off pure white, and anything that is not pure
+    # white gets a glyph, so without this the background comes back as haze.
+    gray[~subject] = 255
+    return gray.astype(np.uint8)
 
 
 def to_ascii(gray, cols):
@@ -172,14 +239,18 @@ def main():
     ap.add_argument("--cols", type=int, default=COLS)
     ap.add_argument("--gamma", type=float, default=1.7,
                     help="darkening curve exponent; raise it if the face looks washed out")
-    ap.add_argument("--no-cutout", action="store_true")
+    ap.add_argument("--cutout", choices=("rembg", "grabcut", "none"), default="rembg",
+                    help="rembg is better but needs a 176 MB model; grabcut needs nothing")
+    ap.add_argument("--sharpen", type=float, default=0.0,
+                    help="unsharp amount before the downscale; try 0.6 if glasses vanish")
+    ap.add_argument("--clip", type=float, default=3.0, help="CLAHE clip limit")
     args = ap.parse_args()
 
     cols = args.cols
 
     img = Image.open(args.photo)
-    img = img.convert("RGB") if args.no_cutout else cutout(img)
-    gray = prepare(img, args.gamma)
+    img = cutout(img, args.cutout)
+    gray = prepare(img, args.gamma, args.sharpen, args.clip)
     lines = to_ascii(gray, cols)
 
     # A rough density read. Well below 20% and the portrait is washed out;
