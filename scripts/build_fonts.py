@@ -36,7 +36,7 @@ BASIC_LATIN = "".join(chr(c) for c in range(0x20, 0x7F)) + "·"  # plus a middle
 
 # Heading words. Keep this in sync with make_headings.py, or the heading SVGs
 # will render with missing glyphs.
-HEADING_CHARS = sorted(set("whoami signal stack ledger contact archive" + "0123456789/-_. "))
+HEADING_CHARS = sorted(set("whoami work signal stack ledger contact archive" + "0123456789/-_. "))
 
 # Search order for a system fallback, all 0.600 em or within a rounding error,
 # all redistributable.

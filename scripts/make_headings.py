@@ -17,7 +17,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import svgkit as K  # noqa: E402
 
-WORDS = ["whoami", "signal", "stack", "contact"]
+WORDS = ["whoami", "work", "signal", "stack", "contact"]
 
 WIDTH = 860
 HEIGHT = 34

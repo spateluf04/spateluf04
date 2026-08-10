@@ -1,0 +1,15 @@
+# Without this, editing a file on Windows and regenerating it from a script
+# produce diffs that touch every line in the file, purely over carriage
+# returns. A 500-line phantom diff buries the four lines that actually changed.
+* text=auto eol=lf
+
+# The SVGs are generated. They must be byte-identical run to run, or the
+# nightly workflow commits a no-op change every night.
+*.svg text eol=lf
+
+*.woff2 binary
+*.ttf   binary
+*.otf   binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
