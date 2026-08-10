@@ -23,9 +23,18 @@ jobs:
 
       - name: draw the graphics
         env:
-          # The built-in token returns the same numbers as a personal access
-          # token for public data. No PAT to create, rotate, or leak.
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # The built-in token is repo-scoped: it can only see public activity,
+          # so the totals here count public contributions only. Enabling
+          # "Include private contributions on my profile" in GitHub settings
+          # changes the graph on your profile page but NOT this number, because
+          # the setting governs display and the token governs access. Measured:
+          # profile showed 124 for the year while this token reported 68.
+          #
+          # To count private work too, create a classic PAT with the `repo`
+          # scope, save it as a repository secret named STATS_TOKEN, and this
+          # picks it up automatically. The tradeoff is a credential to rotate,
+          # so it is opt-in rather than required.
+          GITHUB_TOKEN: ${{ secrets.STATS_TOKEN || secrets.GITHUB_TOKEN }}
           GH_LOGIN: ${{ github.repository_owner }}
         run: python3 scripts/generate_stats.py
 

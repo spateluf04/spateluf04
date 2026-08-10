@@ -87,6 +87,18 @@ portrait roughly 7% narrower than you see it.
 
 Two ways. Either works, and both produce identical bytes.
 
+A word on what gets counted. The workflow's built-in `GITHUB_TOKEN` is
+repo-scoped, so the totals cover **public contributions only**. Turning on
+"Include private contributions on my profile" in GitHub settings does not change
+this: that setting governs what your profile page displays, while the token
+governs what the API will hand over. Measured on this account, the profile
+showed 124 contributions for the year while the workflow reported 68.
+
+If you want private work counted, create a classic personal access token with
+the `repo` scope, save it as a repository secret named `STATS_TOKEN`, and the
+workflow uses it automatically. That buys accuracy at the cost of a credential
+to rotate, which is why it is opt-in.
+
 **Locally**, to see them before anyone else does:
 
 ```bash
