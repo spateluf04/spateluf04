@@ -13,11 +13,12 @@
 > Junior CS at the University of Florida. Most of what I build starts at the<br>
 > hardware or the raw sensor data and ends at something a person can use.
 
-Lately that has meant pulling fingertip trajectories out of smart-glasses<br>
-recordings, building a rules engine that decides whether a prescription is safe<br>
-before any model is allowed an opinion, and a C++ co-purchase graph that turned<br>
-out to be the most interesting part of a data structures course. Currently<br>
-poking at energy systems, mobile apps, and open source.
+Lately that has meant reading appliances out of smart-glasses footage and<br>
+turning them into an energy bill, building a rules engine that decides whether a<br>
+prescription is safe before any model is allowed an opinion, and a C++<br>
+co-purchase graph that turned out to be the most interesting part of a data<br>
+structures course. Currently poking at energy systems, mobile apps, and open<br>
+source.
 
 <samp>python · typescript · c++ · react · react native · firebase · fastapi</samp>
 
@@ -26,27 +27,12 @@ poking at energy systems, mobile apps, and open source.
   <img src="./hd-work.svg" width="860" alt="work">
 </picture>
 
-**[CleanVision](https://github.com/spateluf04/CleanVision)** &nbsp;<samp>python · pytorch · yolo · mediapipe</samp><br>
-Air-writing recognition on Meta Project Aria Gen 1 glasses. Collects fingertip<br>
-trajectories from offline VRS recordings, normalises them, trains an LSTM and a<br>
-transformer encoder on the result, then runs the winner live against the<br>
-headset's RGB stream. Ships a PyQt5 dashboard for capture and review.
-
-**[The Pause Protocol](https://github.com/SamirOrgSWE/The-Pause-Protocol)** &nbsp;<samp>react native · expo · firebase</samp><br>
-Mindfulness app that intercepts distracting app launches through iOS Shortcuts<br>
-and makes you sit through a breathing countdown first. Firebase auth, a<br>
-Firestore-backed quote database, and an admin role system. Team project.
-
-**[DSA E-Commerce Engine](https://github.com/spateluf04/DSAProject2-ECommerce)** &nbsp;<samp>c++ · cmake · graphs</samp><br>
-Command-line tool that ingests order, product and customer CSVs, benchmarks<br>
-merge sort against quick sort on them, and builds a co-purchase graph from order<br>
-history to answer "customers who bought this also bought" by nearest-neighbour<br>
-query.
-
-**RoomScan** &nbsp;<samp>python · projectaria_tools · wsl2</samp><br>
-Energy-waste scanner on Meta Project Aria smart glasses: identifies appliances<br>
-and estimates running cost on a live dashboard, with offline VRS sensor<br>
-processing in WSL2. Third place at a UCF hackathon.
+**[CleanVision](https://github.com/spateluf04/CleanVision)** &nbsp;<samp>python · yolov8 · gemini api · projectaria_tools</samp><br>
+Energy-audit pipeline on Meta Project Aria Gen 1 glasses. Runs YOLOv8 appliance<br>
+detection over a room walkthrough, converts appliance counts into kWh and cost<br>
+estimates, and emits a self-contained HTML report with optional Gemini<br>
+vision-grounded recommendations. Offline VRS sensor processing in WSL2. Third of<br>
+80+ teams at Knight Hacks, built with one other person.
 
 **PharmacyDash** &nbsp;<samp>fastapi · react · typescript · claude api</samp><br>
 Clinical dashboard for catching over-prescription, built on a deliberate split:<br>
@@ -56,7 +42,25 @@ pharmacists' plain-English protocols into structured rules and explains flags. I
 never makes the clinical call. A de-identification boundary means only<br>
 tokenised, non-PHI data crosses into the AI layer.
 
-<sub>RoomScan and PharmacyDash have no public repository yet.</sub>
+**[E-Commerce Analytics Engine](https://github.com/spateluf04/DSAProject2-ECommerce)** &nbsp;<samp>c++ · cmake · graphs</samp><br>
+Command-line tool that ingests order, product and customer CSVs, benchmarks<br>
+merge sort against quick sort on them, and builds a co-purchase graph from order<br>
+history to answer "customers who bought this also bought" by nearest-neighbour<br>
+query.
+
+**[The Pause Protocol](https://github.com/SamirOrgSWE/The-Pause-Protocol)** &nbsp;<samp>react native · expo · firebase</samp><br>
+Mindfulness app that intercepts distracting app launches through iOS Shortcuts<br>
+and makes you sit through a breathing countdown first. Firebase auth, a<br>
+Firestore-backed quote database, and an admin role system. Three-person team; I<br>
+owned the backend and data layer.
+
+**[NAME PENDING]** &nbsp;<samp>python · pytorch · lstm · mediapipe</samp><br>
+Air-writing recognition on Meta Project Aria Gen 1 glasses. Collects fingertip<br>
+trajectories from offline VRS recordings, normalizes them, trains an LSTM and a<br>
+transformer encoder on the result, then runs the winner live against the<br>
+headset's RGB stream. Ships a PyQt5 dashboard for capture and review.
+
+<sub>PharmacyDash has no public repository yet.</sub>
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./hd-signal-dark.svg">
@@ -73,16 +77,11 @@ tokenised, non-PHI data crosses into the AI layer.
   <img src="./hd-stack.svg" width="860" alt="stack">
 </picture>
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./langs-dark.svg">
-  <img src="./langs.svg" width="860" alt="Languages by bytes written across public repositories">
-</picture>
-
 <samp>
 languages &nbsp;python · javascript / typescript · c++<br>
 frameworks &nbsp;react · react native / expo · next.js · node · fastapi<br>
 tools &nbsp;git · firebase / firestore · linux / wsl2 · vs code<br>
-coursework &nbsp;data structures &amp; algorithms · operating systems · software engineering · linear algebra
+coursework &nbsp;data structures &amp; algorithms · operating systems · computer architecture · software engineering · linear algebra
 </samp>
 
 <picture>
@@ -92,7 +91,9 @@ coursework &nbsp;data structures &amp; algorithms · operating systems · softwa
 
 <samp>
   <a href="mailto:sampatel0803@gmail.com">sampatel0803@gmail.com</a> ·
-  <a href="https://github.com/spateluf04">github.com/spateluf04</a>
+  <a href="https://github.com/spateluf04">github.com/spateluf04</a> ·
+  <a href="https://samirpersonalportfolio.netlify.app/">portfolio</a> ·
+  <a href="https://www.linkedin.com/in/samir-patel-3909a2335/">linkedin</a>
 </samp>
 
 <details>
